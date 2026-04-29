@@ -21,7 +21,7 @@ const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      senha: hashedPassword,
+      password: hashedPassword,
     });
 
     res.status(201).json({
@@ -49,7 +49,7 @@ const login = async (req, res) => {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
-    const senhaValida = await bcrypt.compare(senha, user.senha);
+    const senhaValida = await bcrypt.compare(senha, user.password);
 
     if (!senhaValida) {
       return res.status(401).json({ message: "Senha inválida" });
