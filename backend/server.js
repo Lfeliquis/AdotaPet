@@ -17,9 +17,9 @@ app.use(express.json());
 
 // ROTAS ORGANIZADAS
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/pets", petRoutes);
-app.use("/api/adoptions", adoptionRoutes);
+app.use("/users", userRoutes);
+app.use("/pets", petRoutes);
+app.use("/adoptions", adoptionRoutes);
 
 // Conexão com banco
 connectDB();
