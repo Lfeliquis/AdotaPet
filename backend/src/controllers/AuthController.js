@@ -2,35 +2,43 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
+// REGISTER
 const register = async (req, res) => {
-  const { email, senha } = req.body;
+  const { name, email, senha } = req.body;
 
   try {
-    const userExistente = await User.findOne({ email });
+    // Verifica se já existe
+    const userExists = await User.findOne({ email });
 
-    if (userExistente) {
-      return res.status(400).json({ message: "Email já cadastrado" });
+    if (userExists) {
+      return res.status(400).json({ message: "Usuário já existe" });
     }
 
-    const senhaHash = await bcrypt.hash(senha, 10);
+    // Criptografar senha
+    const hashedPassword = await bcrypt.hash(senha, 10);
 
-    const novoUser = await User.create({
+    // Criar usuário
+    const user = await User.create({
+      name,
       email,
-      senha: senhaHash,
+      senha: hashedPassword,
     });
 
     res.status(201).json({
       message: "Usuário criado com sucesso",
       user: {
-        id: novoUser._id,
-        email: novoUser.email,
+        id: user._id,
+        name: user.name,
+        email: user.email,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Erro no servidor" });
+    console.error(error);
+    res.status(500).json({ message: "Erro ao cadastrar usuário" });
   }
 };
 
+// LOGIN
 const login = async (req, res) => {
   const { email, senha } = req.body;
 
@@ -47,12 +55,9 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Senha inválida" });
     }
 
-    // GERAR TOKEN
-    const token = jwt.sign(
-      { id: user._id }, // payload
-      process.env.JWT_SECRET, // chave secreta
-      { expiresIn: "1d" }, // tempo de expiração
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
 
     res.json({
       message: "Login realizado com sucesso",
