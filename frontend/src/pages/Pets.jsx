@@ -15,7 +15,7 @@ function Pets() {
   useEffect(() => {
     async function fetchPets() {
       try {
-        const response = await api.get("/api/pets");
+        const response = await api.get("/pets");
         setPets(response.data);
       } catch (err) {
         setError("Erro ao carregar os pets");
