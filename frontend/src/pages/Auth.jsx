@@ -28,13 +28,17 @@ function Auth() {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? "/login" : "/register";
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
       const payload = isLogin
         ? {
             email: formData.email,
-            password: formData.password,
+            senha: formData.password,
           }
-        : formData;
+        : {
+            name: formData.name,
+            email: formData.email,
+            senha: formData.password,
+          };
 
       const response = await api.post(endpoint, payload);
 
@@ -44,7 +48,7 @@ function Auth() {
       toast.success(
         isLogin
           ? "Login realizado com sucesso! 👋"
-          : "Conta criada com sucesso! 🎉"
+          : "Conta criada com sucesso! 🎉",
       );
 
       navigate("/dashboard");
