@@ -17,8 +17,8 @@ export default function Dashboard() {
     async function fetchDashboardData() {
       try {
         const [petsRes, adoptionsRes] = await Promise.all([
-          api.get("/my-pets"),
-          api.get("/my-adoptions"),
+          api.get("/pets/my-pets"),
+          api.get("/pets/my-adoptions"),
         ]);
 
         setMyPets(petsRes.data);
