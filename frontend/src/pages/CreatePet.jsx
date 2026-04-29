@@ -13,6 +13,7 @@ export default function CreatePet() {
     species: "",
     breed: "",
     description: "",
+    size: "",
   });
 
   const [image, setImage] = useState(null);
@@ -20,7 +21,10 @@ export default function CreatePet() {
   const [saving, setSaving] = useState(false);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   }
 
   function handleImageChange(e) {
@@ -47,11 +51,16 @@ export default function CreatePet() {
         formData.append("image", image);
       }
 
-      await api.post("/pets", formData);
+      await api.post("/pets", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      toast.success("Pet cadastrado com sucesso! 🐾");
+      toast.success("Pet cadastrado com sucesso");
       navigate("/");
     } catch (err) {
+      console.error(err);
       toast.error(err.response?.data?.message || "Erro ao cadastrar pet");
     } finally {
       setSaving(false);
@@ -64,7 +73,7 @@ export default function CreatePet() {
 
       <div className="form-shell">
         <div className="form-card">
-          <h2>Cadastrar novo pet 🐾</h2>
+          <h2>Cadastrar novo pet</h2>
 
           <form onSubmit={handleSubmit}>
             <input
@@ -96,18 +105,38 @@ export default function CreatePet() {
               placeholder="Idade"
               value={form.age}
               onChange={handleChange}
+              required
             />
+
+            <select
+              name="size"
+              value={form.size}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecione o porte</option>
+              <option value="small">Pequeno</option>
+              <option value="medium">Médio</option>
+              <option value="large">Grande</option>
+            </select>
 
             <textarea
               name="description"
               placeholder="Descrição"
               value={form.description}
               onChange={handleChange}
+              required
             />
 
             <input type="file" accept="image/*" onChange={handleImageChange} />
 
-            {preview && <img src={preview} alt="Preview do pet" />}
+            {preview && (
+              <img
+                src={preview}
+                alt="Preview do pet"
+                style={{ width: "100%", marginTop: "10px" }}
+              />
+            )}
 
             <button type="submit" disabled={saving}>
               {saving ? "Cadastrando..." : "Cadastrar"}
