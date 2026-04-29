@@ -33,7 +33,9 @@ export default function Dashboard() {
     fetchDashboardData();
   }, []);
 
-  const availablePets = myPets.filter((pet) => pet.status === "available").length;
+  const availablePets = myPets.filter(
+    (pet) => pet.status === "available",
+  ).length;
   const adoptedPets = myPets.filter((pet) => pet.status === "adopted").length;
 
   return (
@@ -50,8 +52,8 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-  <DashboardSkeleton />
-) : (
+          <DashboardSkeleton />
+        ) : (
           <>
             <div className="dashboard-stats">
               <div className="dashboard-stat-card">
