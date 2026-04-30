@@ -19,6 +19,7 @@ const AdoptionRequestSchema = new mongoose.Schema(
     },
     message: {
       type: String,
+      trim: true,
     },
     status: {
       type: String,
@@ -26,7 +27,12 @@ const AdoptionRequestSchema = new mongoose.Schema(
       default: "pending",
     },
   },
-  { timestamps: true },
+  { timestamps: true }
+);
+
+AdoptionRequestSchema.index(
+  { pet: 1, requester: 1 },
+  { unique: true }
 );
 
 module.exports = mongoose.model("AdoptionRequest", AdoptionRequestSchema);

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const AdoptionRequest = require("../models/AdoptionRequest");
 const Pet = require("../models/Pet");
 
-// 📩 Criar solicitação
+// Criar solicitação
 const createRequest = async (req, res) => {
   try {
     const { petId, message } = req.body;
@@ -29,7 +29,6 @@ const createRequest = async (req, res) => {
       });
     }
 
-    // evitar duplicidade
     const existing = await AdoptionRequest.findOne({
       pet: petId,
       requester: req.userId,
@@ -46,7 +45,7 @@ const createRequest = async (req, res) => {
       pet: petId,
       requester: req.userId,
       owner: pet.owner,
-      message,
+      message: message?.trim() || "",
     });
 
     res.status(201).json({
@@ -58,7 +57,7 @@ const createRequest = async (req, res) => {
   }
 };
 
-// 📤 Minhas solicitações
+// Minhas solicitações
 const getMyRequests = async (req, res) => {
   try {
     const requests = await AdoptionRequest.find({
@@ -73,7 +72,7 @@ const getMyRequests = async (req, res) => {
   }
 };
 
-// 📥 Solicitações recebidas (sou dono)
+// Solicitações recebidas
 const getReceivedRequests = async (req, res) => {
   try {
     const requests = await AdoptionRequest.find({
@@ -88,7 +87,7 @@ const getReceivedRequests = async (req, res) => {
   }
 };
 
-// ✅ Aprovar
+// Aprovar solicitação
 const approveRequest = async (req, res) => {
   try {
     const request = await AdoptionRequest.findById(req.params.id);
@@ -107,25 +106,33 @@ const approveRequest = async (req, res) => {
       });
     }
 
-    // atualizar solicitação
+    const pet = await Pet.findById(request.pet);
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet não encontrado" });
+    }
+
+    if (pet.status === "adopted") {
+      return res.status(400).json({
+        message: "Pet já foi adotado",
+      });
+    }
+
     request.status = "approved";
     await request.save();
 
-    // atualizar pet
-    const pet = await Pet.findById(request.pet);
     pet.status = "adopted";
     pet.adoptedBy = request.requester;
     pet.adoptedAt = new Date();
     await pet.save();
 
-    // rejeitar outras solicitações
     await AdoptionRequest.updateMany(
       {
         pet: request.pet,
         _id: { $ne: request._id },
         status: "pending",
       },
-      { status: "rejected" },
+      { status: "rejected" }
     );
 
     res.json({ message: "Solicitação aprovada com sucesso" });
@@ -134,7 +141,7 @@ const approveRequest = async (req, res) => {
   }
 };
 
-// ❌ Rejeitar
+// Rejeitar solicitação
 const rejectRequest = async (req, res) => {
   try {
     const request = await AdoptionRequest.findById(req.params.id);
@@ -145,6 +152,12 @@ const rejectRequest = async (req, res) => {
 
     if (request.owner.toString() !== req.userId) {
       return res.status(403).json({ message: "Acesso negado" });
+    }
+
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        message: "Solicitação já foi processada",
+      });
     }
 
     request.status = "rejected";
