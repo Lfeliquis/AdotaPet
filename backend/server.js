@@ -15,21 +15,21 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// ROTAS ORGANIZADAS
-app.use("/api/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/pets", petRoutes);
-app.use("/adoptions", adoptionRoutes);
+// ROTAS
+app.use("/api", authRoutes);
+app.use("/api", userRoutes);
+app.use("/api", petRoutes);
+app.use("/api", adoptionRoutes);
 
-// Conexão com banco
+// BANCO
 connectDB();
 
-// Rota teste
+// TESTE
 app.get("/", (req, res) => {
-  res.send("API rodando 🚀");
+  res.send("API rodando");
 });
 
-// Subir servidor
+// SERVIDOR
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
