@@ -1,28 +1,25 @@
 const express = require("express");
+
 const router = express.Router();
-const AdoptionController = require("../controllers/AdoptionController");
+
 const authMiddleware = require("../middlewares/authMiddleware");
 
-router.post(
-  "/adoption-requests",
-  authMiddleware,
-  AdoptionController.createRequest,
-);
-router.get("/my-requests", authMiddleware, AdoptionController.getMyRequests);
-router.get(
-  "/received-requests",
-  authMiddleware,
-  AdoptionController.getReceivedRequests,
-);
-router.put(
-  "/adoption-requests/:id/approve",
-  authMiddleware,
-  AdoptionController.approveRequest,
-);
-router.put(
-  "/adoption-requests/:id/reject",
-  authMiddleware,
-  AdoptionController.rejectRequest,
-);
+const {
+  createRequest,
+  getMyRequests,
+  getReceivedRequests,
+  approveRequest,
+  rejectRequest,
+} = require("../controllers/AdoptionController");
+
+router.post("/adoptions", authMiddleware, createRequest);
+
+router.get("/adoptions/my-requests", authMiddleware, getMyRequests);
+
+router.get("/adoptions/received", authMiddleware, getReceivedRequests);
+
+router.put("/adoptions/:id/approve", authMiddleware, approveRequest);
+
+router.put("/adoptions/:id/reject", authMiddleware, rejectRequest);
 
 module.exports = router;

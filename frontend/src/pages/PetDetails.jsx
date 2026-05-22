@@ -31,42 +31,51 @@ export default function PetDetails() {
     fetchPet();
   }, [id]);
 
-  async function handleAdopt() {
+  async function handleAdoptionRequest() {
     if (!user) {
       navigate("/login");
       return;
     }
 
-    if (!window.confirm("Deseja adotar este pet?")) return;
+    const message = prompt("Digite uma mensagem para a ONG ou responsável:");
+
+    if (message === null) return;
 
     try {
       setAdopting(true);
-      await api.post(`/pets/${pet._id}/adopt`);
-      toast.success("Pet adotado com sucesso ❤️");
+
+      await api.post("/adoptions", {
+        petId: pet._id,
+        message,
+      });
+
+      toast.success("Solicitação enviada com sucesso");
 
       const res = await api.get(`/pets/${id}`);
       setPet(res.data);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Erro ao adotar pet");
+
+      toast.error(err.response?.data?.message || "Erro ao solicitar adoção");
     } finally {
       setAdopting(false);
     }
   }
 
-if (loading) {
-  return (
-    <>
-      <Navbar />
-      <PetDetailsSkeleton />
-    </>
-  );
-}
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <PetDetailsSkeleton />
+      </>
+    );
+  }
 
   if (!pet) {
     return (
       <>
         <Navbar />
+
         <div className="page-shell">
           <div className="page-container">
             <p>Pet não encontrado.</p>
@@ -77,8 +86,10 @@ if (loading) {
   }
 
   const isOwner = user && pet.owner && pet.owner._id === user.id;
+
   const adoptedByCurrentUser =
     user && pet.adoptedBy && pet.adoptedBy._id === user.id;
+
   const adoptedByAnotherUser =
     pet.status === "adopted" && !adoptedByCurrentUser;
 
@@ -136,6 +147,7 @@ if (loading) {
 
               <div className="pet-details-description">
                 <h3>Descrição</h3>
+
                 <p>{pet.description || "Sem descrição."}</p>
               </div>
 
@@ -147,7 +159,7 @@ if (loading) {
 
               {adoptedByCurrentUser && (
                 <div className="content-card" style={{ padding: "16px" }}>
-                  <p style={{ margin: 0 }}>Você adotou este pet ❤️</p>
+                  <p style={{ margin: 0 }}>Você adotou este pet.</p>
                 </div>
               )}
 
@@ -168,9 +180,9 @@ if (loading) {
                 <button
                   className="adopt-button"
                   disabled={adopting}
-                  onClick={handleAdopt}
+                  onClick={handleAdoptionRequest}
                 >
-                  {adopting ? "Adotando..." : "Adotar pet"}
+                  {adopting ? "Enviando solicitação..." : "Solicitar adoção"}
                 </button>
               ) : (
                 <button className="adopt-button disabled" disabled>

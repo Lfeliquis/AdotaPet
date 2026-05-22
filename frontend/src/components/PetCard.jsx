@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import toast from "react-hot-toast";
 
 export default function PetCard({ pet }) {
   const navigate = useNavigate();
