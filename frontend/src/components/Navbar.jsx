@@ -38,19 +38,30 @@ export default function Navbar() {
                 Painel
               </Link>
 
-              <Link
-                to="/cadastrar-pet"
-                className={`nav-link ${isActive("/cadastrar-pet")}`}
-              >
-                Cadastrar Pet
-              </Link>
+              {user?.role === "admin" && (
+                <>
+                  <Link
+                    to="/cadastrar-pet"
+                    className={`nav-link ${isActive("/cadastrar-pet")}`}
+                  >
+                    Cadastrar Pet
+                  </Link>
 
-              <Link
-                to="/my-pets"
-                className={`nav-link ${isActive("/my-pets")}`}
-              >
-                Meus Pets
-              </Link>
+                  <Link
+                    to="/my-pets"
+                    className={`nav-link ${isActive("/my-pets")}`}
+                  >
+                    Meus Pets
+                  </Link>
+
+                  <Link
+                    to="/adoption-requests"
+                    className={`nav-link ${isActive("/adoption-requests")}`}
+                  >
+                    Solicitações
+                  </Link>
+                </>
+              )}
 
               <Link
                 to="/my-adoptions"
@@ -66,6 +77,7 @@ export default function Navbar() {
           {token ? (
             <>
               <span className="nav-user-name">Olá, {user?.name}</span>
+
               <button className="logout-button" onClick={handleLogout}>
                 Sair
               </button>
