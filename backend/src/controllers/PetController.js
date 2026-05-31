@@ -112,40 +112,31 @@ exports.getPetById = async (req, res) => {
   }
 };
 
-// Deletar pet (CORRIGIDO 🔥)
+// Deletar pet
+// Deletar pet (com exclusão das solicitações)
 exports.deletePet = async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id);
 
     if (!pet) {
-      return res.status(404).json({
-        message: "Pet não encontrado",
-      });
+      return res.status(404).json({ message: "Pet não encontrado" });
     }
 
     if (pet.owner.toString() !== req.userId) {
-      return res.status(403).json({
-        message: "Acesso negado",
-      });
+      return res.status(403).json({ message: "Acesso negado" });
     }
 
-    // Remove todas as solicitações relacionadas
-    await AdoptionRequest.deleteMany({
-      pet: pet._id,
-    });
+    // Primeiro, excluímos as solicitações ligadas a este pet
+    await AdoptionRequest.deleteMany({ pet: pet._id });
 
-    // Remove o pet
+    // Em seguida, excluímos o pet
     await pet.deleteOne();
 
-    res.json({
-      message: "Pet deletado com sucesso",
-    });
+    res.json({ message: "Pet e solicitações deletados com sucesso" });
   } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      message: "Erro ao deletar pet",
-    });
+    res
+      .status(500)
+      .json({ message: "Erro ao deletar pet", error: err.message });
   }
 };
 
