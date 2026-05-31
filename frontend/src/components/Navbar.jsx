@@ -1,167 +1,98 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { DashboardSkeleton } from "../components/Skeletons";
-import Navbar from "../components/Navbar";
-import PageContainer from "../components/PageContainer";
-import api from "../services/api";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-export default function Dashboard() {
+export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const [myPets, setMyPets] = useState([]);
-  const [myAdoptions, setMyAdoptions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const isAdmin = user?.role === "admin";
 
-  useEffect(() => {
-    async function fetchDashboardData() {
-      try {
-        const requests = [];
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  }
 
-        if (isAdmin) {
-          requests.push(api.get("/pets/my-pets"));
-        } else {
-          requests.push(Promise.resolve({ data: [] }));
-        }
-
-        requests.push(api.get("/pets/my-adoptions"));
-
-        const [petsRes, adoptionsRes] = await Promise.all(requests);
-
-        setMyPets(petsRes.data || []);
-        setMyAdoptions(adoptionsRes.data || []);
-      } catch (err) {
-        console.error("Erro ao carregar dashboard:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchDashboardData();
-  }, [isAdmin]);
-
-  const availablePets = myPets.filter(
-    (pet) => pet.status === "available",
-  ).length;
-
-  const adoptedPets = myPets.filter((pet) => pet.status === "adopted").length;
+  function isActive(path) {
+    return location.pathname === path ? "active-link" : "";
+  }
 
   return (
-    <>
-      <Navbar />
+    <header className="navbar">
+      <div className="navbar-container">
+        <Link to="/" className="brand-link">
+          AdotaPet
+        </Link>
 
-      <PageContainer>
-        <div className="dashboard-hero">
-          <h1>Bem-vindo, {user?.name}</h1>
+        <nav className="navbar-links">
+          <Link to="/" className={`nav-link ${isActive("/")}`}>
+            Início
+          </Link>
 
-          <p>Gerencie informações e acompanhe atividades do sistema.</p>
-        </div>
+          {token && (
+            <>
+              <Link
+                to="/dashboard"
+                className={`nav-link ${isActive("/dashboard")}`}
+              >
+                Painel
+              </Link>
 
-        {loading ? (
-          <DashboardSkeleton />
-        ) : (
-          <>
-            {isAdmin ? (
-              <div className="dashboard-stats">
-                <div className="dashboard-stat-card">
-                  <span className="dashboard-stat-label">Meus pets</span>
-
-                  <strong>{myPets.length}</strong>
-                </div>
-
-                <div className="dashboard-stat-card">
-                  <span className="dashboard-stat-label">Pets disponíveis</span>
-
-                  <strong>{availablePets}</strong>
-                </div>
-
-                <div className="dashboard-stat-card">
-                  <span className="dashboard-stat-label">Pets adotados</span>
-
-                  <strong>{adoptedPets}</strong>
-                </div>
-              </div>
-            ) : (
-              <div className="dashboard-stats">
-                <div className="dashboard-stat-card">
-                  <span className="dashboard-stat-label">
-                    Minhas solicitações
-                  </span>
-
-                  <strong>{myAdoptions.length}</strong>
-                </div>
-              </div>
-            )}
-
-            <div className="dashboard-grid">
-              {isAdmin ? (
+              {isAdmin && (
                 <>
-                  <div className="dashboard-box">
-                    <h3>Cadastrar Pet</h3>
+                  <Link
+                    to="/cadastrar-pet"
+                    className={`nav-link ${isActive("/cadastrar-pet")}`}
+                  >
+                    Cadastrar Pet
+                  </Link>
 
-                    <p>Adicione novos pets para adoção.</p>
+                  <Link
+                    to="/my-pets"
+                    className={`nav-link ${isActive("/my-pets")}`}
+                  >
+                    Meus Pets
+                  </Link>
 
-                    <button onClick={() => navigate("/cadastrar-pet")}>
-                      Cadastrar
-                    </button>
-                  </div>
-
-                  <div className="dashboard-box">
-                    <h3>Meus Pets</h3>
-
-                    <p>Gerencie os pets cadastrados.</p>
-
-                    <button onClick={() => navigate("/my-pets")}>
-                      Gerenciar
-                    </button>
-                  </div>
-
-                  <div className="dashboard-box">
-                    <h3>Solicitações</h3>
-
-                    <p>Aprove ou rejeite pedidos de adoção.</p>
-
-                    <button onClick={() => navigate("/adoption-requests")}>
-                      Ver solicitações
-                    </button>
-                  </div>
-
-                  <div className="dashboard-box">
-                    <h3>Marketplace</h3>
-
-                    <p>Visualize todos os pets publicados.</p>
-
-                    <button onClick={() => navigate("/")}>Ver pets</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="dashboard-box">
-                    <h3>Explorar Pets</h3>
-
-                    <p>Veja os pets disponíveis para adoção.</p>
-
-                    <button onClick={() => navigate("/")}>Ver pets</button>
-                  </div>
-
-                  <div className="dashboard-box">
-                    <h3>Minhas Adoções</h3>
-
-                    <p>Acompanhe suas solicitações de adoção.</p>
-
-                    <button onClick={() => navigate("/my-adoptions")}>
-                      Ver solicitações
-                    </button>
-                  </div>
+                  <Link
+                    to="/adoption-requests"
+                    className={`nav-link ${isActive("/adoption-requests")}`}
+                  >
+                    Solicitações
+                  </Link>
                 </>
               )}
-            </div>
-          </>
-        )}
-      </PageContainer>
-    </>
+
+              {!isAdmin && (
+                <Link
+                  to="/my-adoptions"
+                  className={`nav-link ${isActive("/my-adoptions")}`}
+                >
+                  Minhas Adoções
+                </Link>
+              )}
+            </>
+          )}
+        </nav>
+
+        <div className="navbar-user-area">
+          {token ? (
+            <>
+              <span className="nav-user-name">Olá, {user?.name}</span>
+
+              <button className="logout-button" onClick={handleLogout}>
+                Sair
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="login-button">
+              Entrar
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }
