@@ -12,6 +12,8 @@ export default function PetDetails() {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [adopting, setAdopting] = useState(false);
+  const [alreadyRequested, setAlreadyRequested] = useState(false);
+  const [requestStatus, setRequestStatus] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -20,6 +22,14 @@ export default function PetDetails() {
       try {
         const res = await api.get(`/pets/${id}`);
         setPet(res.data);
+
+        if (user) {
+          const requestRes = await api.get(`/adoptions/check/${id}`);
+
+          setAlreadyRequested(requestRes.data.alreadyRequested);
+
+          setRequestStatus(requestRes.data.status);
+        }
       } catch (err) {
         console.error("Erro ao carregar pet:", err);
         toast.error("Não foi possível carregar os detalhes do pet");
@@ -50,6 +60,8 @@ export default function PetDetails() {
       });
 
       toast.success("Solicitação enviada com sucesso");
+      setAlreadyRequested(true);
+      setRequestStatus("pending");
 
       const res = await api.get(`/pets/${id}`);
       setPet(res.data);
@@ -177,13 +189,21 @@ export default function PetDetails() {
                   Editar meu pet
                 </button>
               ) : pet.status === "available" ? (
-                <button
-                  className="adopt-button"
-                  disabled={adopting}
-                  onClick={handleAdoptionRequest}
-                >
-                  {adopting ? "Enviando solicitação..." : "Solicitar adoção"}
-                </button>
+                alreadyRequested ? (
+                  <button className="adopt-button disabled" disabled>
+                    {requestStatus === "pending" && "Solicitação em análise"}
+                    {requestStatus === "approved" && "Solicitação aprovada"}
+                    {requestStatus === "rejected" && "Solicitação recusada"}
+                  </button>
+                ) : (
+                  <button
+                    className="adopt-button"
+                    disabled={adopting}
+                    onClick={handleAdoptionRequest}
+                  >
+                    {adopting ? "Enviando solicitação..." : "Solicitar adoção"}
+                  </button>
+                )
               ) : (
                 <button className="adopt-button disabled" disabled>
                   {adoptedByCurrentUser

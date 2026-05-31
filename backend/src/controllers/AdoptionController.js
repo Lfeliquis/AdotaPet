@@ -132,7 +132,7 @@ const approveRequest = async (req, res) => {
         _id: { $ne: request._id },
         status: "pending",
       },
-      { status: "rejected" }
+      { status: "rejected" },
     );
 
     res.json({ message: "Solicitação aprovada com sucesso" });
@@ -169,10 +169,27 @@ const rejectRequest = async (req, res) => {
   }
 };
 
+const checkRequestStatus = async (req, res) => {
+  try {
+    const request = await AdoptionRequest.findOne({
+      pet: req.params.petId,
+      requester: req.userId,
+    });
+
+    res.json({
+      alreadyRequested: !!request,
+      status: request?.status || null,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createRequest,
   getMyRequests,
   getReceivedRequests,
   approveRequest,
   rejectRequest,
+  checkRequestStatus,
 };

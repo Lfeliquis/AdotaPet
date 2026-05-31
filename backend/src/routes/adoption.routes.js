@@ -11,6 +11,7 @@ const {
   getReceivedRequests,
   approveRequest,
   rejectRequest,
+  checkRequestStatus,
 } = require("../controllers/AdoptionController");
 
 router.post("/adoptions", authMiddleware, createRequest);
@@ -23,6 +24,8 @@ router.get(
   adminMiddleware,
   getReceivedRequests,
 );
+
+router.get("/check/:petId", authMiddleware, checkRequestStatus);
 
 router.put(
   "/adoptions/:id/approve",

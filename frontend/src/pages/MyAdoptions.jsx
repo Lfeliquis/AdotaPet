@@ -6,73 +6,116 @@ import Navbar from "../components/Navbar";
 import PageContainer from "../components/PageContainer";
 
 export default function MyAdoptions() {
-  const [pets, setPets] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchMyAdoptions() {
+    async function fetchRequests() {
       try {
-        const res = await api.get("/my-adoptions");
-        setPets(res.data);
+        const res = await api.get("/adoptions/my-requests");
+        setRequests(res.data);
       } catch (err) {
-        console.error("Erro ao buscar minhas adoções:", err);
+        console.error("Erro ao buscar solicitações:", err);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchMyAdoptions();
+    fetchRequests();
   }, []);
+
+  function getStatusLabel(status) {
+    switch (status) {
+      case "approved":
+        return "Aprovada";
+
+      case "rejected":
+        return "Rejeitada";
+
+      default:
+        return "Pendente";
+    }
+  }
+
+  function getStatusClass(status) {
+    switch (status) {
+      case "approved":
+        return "adopted";
+
+      case "rejected":
+        return "inactive";
+
+      default:
+        return "available";
+    }
+  }
 
   return (
     <>
       <Navbar />
 
-      <PageContainer title="Minhas Adoções" emoji="❤️">
-      {loading ? (
-  <ListSkeleton count={3} />
-) : pets.length === 0 ? (
-  <div className="empty-state-box">
-    <p>Você ainda não adotou nenhum pet.</p>
-    <button className="btn btn-primary" onClick={() => navigate("/")}>
-      Ver pets disponíveis
-    </button>
-  </div>
-) : (
+      <PageContainer title="Minhas Solicitações de Adoção">
+        {loading ? (
+          <ListSkeleton count={3} />
+        ) : requests.length === 0 ? (
+          <div className="empty-state-box">
+            <p>Você ainda não realizou nenhuma solicitação de adoção.</p>
+
+            <button className="btn btn-primary" onClick={() => navigate("/")}>
+              Ver pets disponíveis
+            </button>
+          </div>
+        ) : (
           <div className="list-page">
-            {pets.map((pet) => (
-              <div className="list-row" key={pet._id}>
+            {requests.map((request) => (
+              <div className="list-row" key={request._id}>
                 <div className="list-left">
                   <img
                     className="list-thumb"
-                    src={pet.image || "/images/pet-placeholder.jpg"}
-                    alt={pet.name}
+                    src={request.pet?.image || "/images/pet-placeholder.jpg"}
+                    alt={request.pet?.name}
                   />
 
                   <div className="list-content">
-                    <h3>{pet.name}</h3>
+                    <h3>{request.pet?.name}</h3>
+
                     <p>
-                      {pet.species || "Pet"}
-                      {pet.breed ? ` • ${pet.breed}` : ""}
+                      {request.pet?.species || "Pet"}
+                      {request.pet?.breed ? ` • ${request.pet.breed}` : ""}
                     </p>
-                    <p>{pet.age ? `${pet.age} anos` : "Idade não informada"}</p>
+
                     <p>
-                      <strong>Dono anterior:</strong>{" "}
-                      {pet.owner?.name || "Não informado"}
+                      <strong>Responsável:</strong>{" "}
+                      {request.owner?.name || "Não informado"}
+                    </p>
+
+                    <p>
+                      <strong>Mensagem enviada:</strong>{" "}
+                      {request.message || "Nenhuma mensagem"}
+                    </p>
+
+                    <p>
+                      <strong>Data:</strong>{" "}
+                      {new Date(request.createdAt).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                 </div>
 
                 <div className="list-right">
-                  <span className="list-status adopted">Adotado por você</span>
+                  <span
+                    className={`list-status ${getStatusClass(request.status)}`}
+                  >
+                    {getStatusLabel(request.status)}
+                  </span>
 
                   <div className="list-actions">
                     <button
                       className="btn btn-neutral"
-                      onClick={() => navigate(`/pets/${pet._id}`)}
+                      onClick={() => navigate(`/pets/${request.pet?._id}`)}
                     >
-                      Ver detalhes
+                      Ver pet
                     </button>
                   </div>
                 </div>
