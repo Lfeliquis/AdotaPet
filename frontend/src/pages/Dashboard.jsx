@@ -148,7 +148,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="dashboard-box">
-                    <h3>Minhas Adoções</h3>
+                    <h3>Minhas Solicitações</h3>
 
                     <p>Acompanhe suas solicitações de adoção.</p>
 

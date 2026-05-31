@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ListSkeleton } from "../components/Skeletons";
-import api from "../services/api";
 import Navbar from "../components/Navbar";
 import PageContainer from "../components/PageContainer";
+import api from "../services/api";
 
 export default function MyAdoptions() {
   const [requests, setRequests] = useState([]);
@@ -15,9 +14,10 @@ export default function MyAdoptions() {
     async function fetchRequests() {
       try {
         const res = await api.get("/adoptions/my-requests");
+
         setRequests(res.data);
       } catch (err) {
-        console.error("Erro ao buscar solicitações:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -26,14 +26,12 @@ export default function MyAdoptions() {
     fetchRequests();
   }, []);
 
-  function getStatusLabel(status) {
+  function getStatusText(status) {
     switch (status) {
       case "approved":
         return "Aprovada";
-
       case "rejected":
         return "Rejeitada";
-
       default:
         return "Pendente";
     }
@@ -43,12 +41,10 @@ export default function MyAdoptions() {
     switch (status) {
       case "approved":
         return "adopted";
-
       case "rejected":
-        return "inactive";
-
+        return "rejected";
       default:
-        return "available";
+        return "pending";
     }
   }
 
@@ -56,15 +52,15 @@ export default function MyAdoptions() {
     <>
       <Navbar />
 
-      <PageContainer title="Minhas Solicitações de Adoção">
+      <PageContainer title="Minhas Solicitações" emoji="📋">
         {loading ? (
-          <ListSkeleton count={3} />
+          <p>Carregando...</p>
         ) : requests.length === 0 ? (
           <div className="empty-state-box">
-            <p>Você ainda não realizou nenhuma solicitação de adoção.</p>
+            <p>Você ainda não realizou nenhuma solicitação.</p>
 
             <button className="btn btn-primary" onClick={() => navigate("/")}>
-              Ver pets disponíveis
+              Ver Pets
             </button>
           </div>
         ) : (
@@ -82,18 +78,11 @@ export default function MyAdoptions() {
                     <h3>{request.pet?.name}</h3>
 
                     <p>
-                      {request.pet?.species || "Pet"}
-                      {request.pet?.breed ? ` • ${request.pet.breed}` : ""}
+                      <strong>Responsável:</strong> {request.owner?.name}
                     </p>
 
                     <p>
-                      <strong>Responsável:</strong>{" "}
-                      {request.owner?.name || "Não informado"}
-                    </p>
-
-                    <p>
-                      <strong>Mensagem enviada:</strong>{" "}
-                      {request.message || "Nenhuma mensagem"}
+                      <strong>Mensagem:</strong> {request.message || "Nenhuma"}
                     </p>
 
                     <p>
@@ -107,17 +96,17 @@ export default function MyAdoptions() {
                   <span
                     className={`list-status ${getStatusClass(request.status)}`}
                   >
-                    {getStatusLabel(request.status)}
+                    {getStatusText(request.status)}
                   </span>
 
-                  <div className="list-actions">
+                  {request.pet && (
                     <button
                       className="btn btn-neutral"
-                      onClick={() => navigate(`/pets/${request.pet?._id}`)}
+                      onClick={() => navigate(`/pets/${request.pet._id}`)}
                     >
-                      Ver pet
+                      Ver Pet
                     </button>
-                  </div>
+                  )}
                 </div>
               </div>
             ))}

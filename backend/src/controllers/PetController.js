@@ -2,6 +2,7 @@ const Pet = require("../models/Pet");
 const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
 const mongoose = require("mongoose");
+const AdoptionRequest = require("../models/AdoptionRequest");
 
 // Upload para Cloudinary
 function uploadToCloudinary(buffer) {
@@ -117,18 +118,34 @@ exports.deletePet = async (req, res) => {
     const pet = await Pet.findById(req.params.id);
 
     if (!pet) {
-      return res.status(404).json({ message: "Pet não encontrado" });
+      return res.status(404).json({
+        message: "Pet não encontrado",
+      });
     }
 
     if (pet.owner.toString() !== req.userId) {
-      return res.status(403).json({ message: "Acesso negado" });
+      return res.status(403).json({
+        message: "Acesso negado",
+      });
     }
 
+    // Remove todas as solicitações relacionadas
+    await AdoptionRequest.deleteMany({
+      pet: pet._id,
+    });
+
+    // Remove o pet
     await pet.deleteOne();
 
-    res.json({ message: "Pet deletado" });
+    res.json({
+      message: "Pet deletado com sucesso",
+    });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao deletar pet" });
+    console.error(err);
+
+    res.status(500).json({
+      message: "Erro ao deletar pet",
+    });
   }
 };
 
