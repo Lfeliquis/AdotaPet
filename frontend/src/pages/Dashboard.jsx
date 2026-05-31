@@ -80,25 +80,23 @@ export default function Dashboard() {
             </div>
 
             <div className="dashboard-grid">
-              <div className="dashboard-box">
-                <h3>Cadastrar pet</h3>
+              {user?.role === "admin" && (
+                <div className="dashboard-box">
+                  <h3>Cadastrar pet</h3>
+                  <p>Adicione um novo animal para adoção no sistema.</p>
+                  <button onClick={() => navigate("/cadastrar-pet")}>
+                    Ir para cadastro
+                  </button>
+                </div>
+              )}
 
-                <p>Adicione um novo animal para adoção no sistema.</p>
-
-                <button onClick={() => navigate("/cadastrar-pet")}>
-                  Ir para cadastro
-                </button>
-              </div>
-
-              <div className="dashboard-box">
-                <h3>Meus Pets</h3>
-
-                <p>Veja, edite e remova os pets que você cadastrou.</p>
-
-                <button onClick={() => navigate("/my-pets")}>
-                  Ver meus pets
-                </button>
-              </div>
+              {user?.role === "admin" && (
+                <div className="dashboard-box">
+                  <h3>Meus Pets</h3>
+                  <p>Veja, edite e remova os pets cadastrados.</p>
+                  <button onClick={() => navigate("/my-pets")}>Ver pets</button>
+                </div>
+              )}
 
               <div className="dashboard-box">
                 <h3>Minhas Adoções</h3>

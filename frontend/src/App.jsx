@@ -58,7 +58,7 @@ function App() {
           <Route
             path="/cadastrar-pet"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly>
                 <CreatePet />
               </ProtectedRoute>
             }
@@ -67,7 +67,7 @@ function App() {
           <Route
             path="/editar-pet/:id"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly>
                 <EditPet />
               </ProtectedRoute>
             }
