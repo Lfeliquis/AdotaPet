@@ -61,36 +61,59 @@ export default function AdoptionRequests() {
           <p>Nenhuma solicitação encontrada.</p>
         ) : (
           requests.map((request) => (
-            <div key={request._id} className="content-card">
-              <h3>{request.pet?.name}</h3>
+            <div key={request._id} className="content-card request-card">
+              <img
+                className="request-image"
+                src={request.pet?.image || "/images/pet-placeholder.jpg"}
+                alt={request.pet?.name}
+              />
 
-              <p>
-                <strong>Solicitante:</strong> {request.requester?.name}
-              </p>
+              <div className="request-content">
+                <h3>{request.pet?.name}</h3>
 
-              <p>
-                <strong>Email:</strong> {request.requester?.email}
-              </p>
+                <p>
+                  <strong>Solicitante:</strong> {request.requester?.name}
+                </p>
 
-              <p>
-                <strong>Mensagem:</strong> {request.message || "Sem mensagem"}
-              </p>
+                <p>
+                  <strong>Email:</strong> {request.requester?.email}
+                </p>
 
-              <p>
-                <strong>Status:</strong> {request.status}
-              </p>
+                <p>
+                  <strong>Data:</strong>{" "}
+                  {new Date(request.createdAt).toLocaleDateString("pt-BR")}
+                </p>
 
-              {request.status === "pending" && (
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button onClick={() => approveRequest(request._id)}>
-                    Aprovar
-                  </button>
-
-                  <button onClick={() => rejectRequest(request._id)}>
-                    Rejeitar
-                  </button>
+                <div className="request-message">
+                  <strong>Mensagem:</strong>
+                  <p>{request.message || "Nenhuma mensagem enviada."}</p>
                 </div>
-              )}
+
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span className={`status-badge status-${request.status}`}>
+                    {request.status}
+                  </span>
+                </p>
+
+                {request.status === "pending" && (
+                  <div className="request-actions">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => approveRequest(request._id)}
+                    >
+                      Aprovar
+                    </button>
+
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => rejectRequest(request._id)}
+                    >
+                      Rejeitar
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))
         )}
