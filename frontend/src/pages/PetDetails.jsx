@@ -14,6 +14,7 @@ export default function PetDetails() {
   const [adopting, setAdopting] = useState(false);
   const [alreadyRequested, setAlreadyRequested] = useState(false);
   const [requestStatus, setRequestStatus] = useState(null);
+  const [message, setMessage] = useState(""); // Novo estado para mensagem
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -47,16 +48,12 @@ export default function PetDetails() {
       return;
     }
 
-    const message = prompt("Digite uma mensagem para a ONG ou responsável:");
-
-    if (message === null) return;
-
     try {
       setAdopting(true);
 
       await api.post("/adoptions", {
         petId: pet._id,
-        message,
+        message: message, // Envia a mensagem do campo
       });
 
       toast.success("Solicitação enviada com sucesso");
@@ -65,6 +62,7 @@ export default function PetDetails() {
 
       const res = await api.get(`/pets/${id}`);
       setPet(res.data);
+      setMessage(""); // Limpa o campo após envio
     } catch (err) {
       console.error(err);
 
@@ -149,7 +147,6 @@ export default function PetDetails() {
                 <strong>Responsável:</strong>{" "}
                 {pet.owner?.name || "Não informado"}
               </p>
-
               {pet.adoptedAt && (
                 <p className="pet-details-meta">
                   <strong>Data da adoção:</strong>{" "}
@@ -196,13 +193,28 @@ export default function PetDetails() {
                     {requestStatus === "rejected" && "Solicitação recusada"}
                   </button>
                 ) : (
-                  <button
-                    className="adopt-button"
-                    disabled={adopting}
-                    onClick={handleAdoptionRequest}
-                  >
-                    {adopting ? "Enviando solicitação..." : "Solicitar adoção"}
-                  </button>
+                  <>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Digite sua mensagem para a ONG (opcional)"
+                      style={{
+                        width: "100%",
+                        minHeight: "80px",
+                        marginTop: "16px",
+                      }}
+                    />
+
+                    <button
+                      className="adopt-button"
+                      disabled={adopting}
+                      onClick={handleAdoptionRequest}
+                    >
+                      {adopting
+                        ? "Enviando solicitação..."
+                        : "Solicitar adoção"}
+                    </button>
+                  </>
                 )
               ) : (
                 <button className="adopt-button disabled" disabled>
