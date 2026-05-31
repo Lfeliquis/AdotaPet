@@ -7,22 +7,32 @@ import api from "../services/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [myPets, setMyPets] = useState([]);
   const [myAdoptions, setMyAdoptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const isAdmin = user?.role === "admin";
+
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        const [petsRes, adoptionsRes] = await Promise.all([
-          api.get("/pets/my-pets"),
-          api.get("/pets/my-adoptions"),
-        ]);
+        const requests = [];
 
-        setMyPets(petsRes.data);
-        setMyAdoptions(adoptionsRes.data);
+        if (isAdmin) {
+          requests.push(api.get("/pets/my-pets"));
+        } else {
+          requests.push(Promise.resolve({ data: [] }));
+        }
+
+        requests.push(api.get("/pets/my-adoptions"));
+
+        const [petsRes, adoptionsRes] = await Promise.all(requests);
+
+        setMyPets(petsRes.data || []);
+        setMyAdoptions(adoptionsRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar dashboard:", err);
       } finally {
@@ -31,7 +41,7 @@ export default function Dashboard() {
     }
 
     fetchDashboardData();
-  }, []);
+  }, [isAdmin]);
 
   const availablePets = myPets.filter(
     (pet) => pet.status === "available",
@@ -47,85 +57,106 @@ export default function Dashboard() {
         <div className="dashboard-hero">
           <h1>Bem-vindo, {user?.name}</h1>
 
-          <p>
-            Gerencie seus pets cadastrados, acompanhe adoções e navegue pelo
-            sistema de forma rápida.
-          </p>
+          <p>Gerencie informações e acompanhe atividades do sistema.</p>
         </div>
 
         {loading ? (
           <DashboardSkeleton />
         ) : (
           <>
-            <div className="dashboard-stats">
-              <div className="dashboard-stat-card">
-                <span className="dashboard-stat-label">Meus pets</span>
-                <strong>{myPets.length}</strong>
-              </div>
+            {isAdmin ? (
+              <div className="dashboard-stats">
+                <div className="dashboard-stat-card">
+                  <span className="dashboard-stat-label">Meus pets</span>
 
-              <div className="dashboard-stat-card">
-                <span className="dashboard-stat-label">Pets disponíveis</span>
-                <strong>{availablePets}</strong>
-              </div>
+                  <strong>{myPets.length}</strong>
+                </div>
 
-              <div className="dashboard-stat-card">
-                <span className="dashboard-stat-label">Pets adotados</span>
-                <strong>{adoptedPets}</strong>
-              </div>
+                <div className="dashboard-stat-card">
+                  <span className="dashboard-stat-label">Pets disponíveis</span>
 
-              <div className="dashboard-stat-card">
-                <span className="dashboard-stat-label">Minhas adoções</span>
-                <strong>{myAdoptions.length}</strong>
+                  <strong>{availablePets}</strong>
+                </div>
+
+                <div className="dashboard-stat-card">
+                  <span className="dashboard-stat-label">Pets adotados</span>
+
+                  <strong>{adoptedPets}</strong>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="dashboard-stats">
+                <div className="dashboard-stat-card">
+                  <span className="dashboard-stat-label">
+                    Minhas solicitações
+                  </span>
+
+                  <strong>{myAdoptions.length}</strong>
+                </div>
+              </div>
+            )}
 
             <div className="dashboard-grid">
-              {user?.role === "admin" && (
-                <div className="dashboard-box">
-                  <h3>Cadastrar pet</h3>
-                  <p>Adicione um novo animal para adoção no sistema.</p>
-                  <button onClick={() => navigate("/cadastrar-pet")}>
-                    Ir para cadastro
-                  </button>
-                </div>
-              )}
+              {isAdmin ? (
+                <>
+                  <div className="dashboard-box">
+                    <h3>Cadastrar Pet</h3>
 
-              {user?.role === "admin" && (
-                <div className="dashboard-box">
-                  <h3>Meus Pets</h3>
-                  <p>Veja, edite e remova os pets cadastrados.</p>
-                  <button onClick={() => navigate("/my-pets")}>Ver pets</button>
-                </div>
-              )}
+                    <p>Adicione novos pets para adoção.</p>
 
-              <div className="dashboard-box">
-                <h3>Minhas Adoções</h3>
+                    <button onClick={() => navigate("/cadastrar-pet")}>
+                      Cadastrar
+                    </button>
+                  </div>
 
-                <p>Acompanhe os pets que você adotou.</p>
+                  <div className="dashboard-box">
+                    <h3>Meus Pets</h3>
 
-                <button onClick={() => navigate("/my-adoptions")}>
-                  Ver adoções
-                </button>
-              </div>
+                    <p>Gerencie os pets cadastrados.</p>
 
-              <div className="dashboard-box">
-                <h3>Explorar Pets</h3>
+                    <button onClick={() => navigate("/my-pets")}>
+                      Gerenciar
+                    </button>
+                  </div>
 
-                <p>Veja todos os pets disponíveis no marketplace.</p>
+                  <div className="dashboard-box">
+                    <h3>Solicitações</h3>
 
-                <button onClick={() => navigate("/")}>Ir para home</button>
-              </div>
+                    <p>Aprove ou rejeite pedidos de adoção.</p>
 
-              {user?.role === "admin" && (
-                <div className="dashboard-box">
-                  <h3>Solicitações de adoção</h3>
+                    <button onClick={() => navigate("/adoption-requests")}>
+                      Ver solicitações
+                    </button>
+                  </div>
 
-                  <p>Analise e aprove solicitações de adoção.</p>
+                  <div className="dashboard-box">
+                    <h3>Marketplace</h3>
 
-                  <button onClick={() => navigate("/adoption-requests")}>
-                    Ver solicitações
-                  </button>
-                </div>
+                    <p>Visualize todos os pets publicados.</p>
+
+                    <button onClick={() => navigate("/")}>Ver pets</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="dashboard-box">
+                    <h3>Explorar Pets</h3>
+
+                    <p>Veja os pets disponíveis para adoção.</p>
+
+                    <button onClick={() => navigate("/")}>Ver pets</button>
+                  </div>
+
+                  <div className="dashboard-box">
+                    <h3>Minhas Adoções</h3>
+
+                    <p>Acompanhe suas solicitações de adoção.</p>
+
+                    <button onClick={() => navigate("/my-adoptions")}>
+                      Ver solicitações
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           </>
