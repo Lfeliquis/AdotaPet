@@ -55,9 +55,13 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Senha inválida" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
 
     res.json({
       message: "Login realizado com sucesso",
@@ -65,6 +69,7 @@ const login = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {

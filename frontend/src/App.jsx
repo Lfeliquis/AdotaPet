@@ -8,7 +8,9 @@ import CreatePet from "./pages/CreatePet";
 import EditPet from "./pages/EditPet";
 import MyPets from "./pages/MyPets";
 import MyAdoptions from "./pages/MyAdoptions";
+import AdoptionRequests from "./pages/AdoptionRequests";
 import Auth from "./pages/Auth";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -39,7 +41,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<Auth />} />
+
           <Route path="/pets/:id" element={<PetDetails />} />
 
           <Route
@@ -83,6 +87,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <MyAdoptions />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/adoption-requests"
+            element={
+              <ProtectedRoute>
+                <AdoptionRequests />
               </ProtectedRoute>
             }
           />

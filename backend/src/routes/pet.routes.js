@@ -3,6 +3,7 @@ const router = express.Router();
 
 const PetController = require("../controllers/PetController");
 const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 const upload = require("../middlewares/upload");
 
 // ROTAS GERAIS
@@ -19,6 +20,7 @@ router.get("/pets/:id", PetController.getPetById);
 router.post(
   "/pets",
   authMiddleware,
+  adminMiddleware,
   upload.single("image"),
   PetController.createPet,
 );
@@ -27,12 +29,18 @@ router.post(
 router.put(
   "/pets/:id",
   authMiddleware,
+  adminMiddleware,
   upload.single("image"),
   PetController.updatePet,
 );
 
 // DELETAR
-router.delete("/pets/:id", authMiddleware, PetController.deletePet);
+router.delete(
+  "/pets/:id",
+  authMiddleware,
+  adminMiddleware,
+  PetController.deletePet,
+);
 
 // ADOÇÃO
 router.post("/pets/:id/adopt", authMiddleware, PetController.adoptPet);

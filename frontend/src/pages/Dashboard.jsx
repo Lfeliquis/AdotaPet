@@ -36,6 +36,7 @@ export default function Dashboard() {
   const availablePets = myPets.filter(
     (pet) => pet.status === "available",
   ).length;
+
   const adoptedPets = myPets.filter((pet) => pet.status === "adopted").length;
 
   return (
@@ -44,7 +45,8 @@ export default function Dashboard() {
 
       <PageContainer>
         <div className="dashboard-hero">
-          <h1>Bem-vindo, {user?.name} 👋</h1>
+          <h1>Bem-vindo, {user?.name}</h1>
+
           <p>
             Gerencie seus pets cadastrados, acompanhe adoções e navegue pelo
             sistema de forma rápida.
@@ -79,34 +81,54 @@ export default function Dashboard() {
 
             <div className="dashboard-grid">
               <div className="dashboard-box">
-                <h3>🐶 Cadastrar pet</h3>
+                <h3>Cadastrar pet</h3>
+
                 <p>Adicione um novo animal para adoção no sistema.</p>
+
                 <button onClick={() => navigate("/cadastrar-pet")}>
                   Ir para cadastro
                 </button>
               </div>
 
               <div className="dashboard-box">
-                <h3>📋 Meus Pets</h3>
+                <h3>Meus Pets</h3>
+
                 <p>Veja, edite e remova os pets que você cadastrou.</p>
+
                 <button onClick={() => navigate("/my-pets")}>
                   Ver meus pets
                 </button>
               </div>
 
               <div className="dashboard-box">
-                <h3>❤️ Minhas Adoções</h3>
+                <h3>Minhas Adoções</h3>
+
                 <p>Acompanhe os pets que você adotou.</p>
+
                 <button onClick={() => navigate("/my-adoptions")}>
                   Ver adoções
                 </button>
               </div>
 
               <div className="dashboard-box">
-                <h3>🔎 Explorar Pets</h3>
+                <h3>Explorar Pets</h3>
+
                 <p>Veja todos os pets disponíveis no marketplace.</p>
+
                 <button onClick={() => navigate("/")}>Ir para home</button>
               </div>
+
+              {user?.role === "admin" && (
+                <div className="dashboard-box">
+                  <h3>Solicitações de adoção</h3>
+
+                  <p>Analise e aprove solicitações de adoção.</p>
+
+                  <button onClick={() => navigate("/adoption-requests")}>
+                    Ver solicitações
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}

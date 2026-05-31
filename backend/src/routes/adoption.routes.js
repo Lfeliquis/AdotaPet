@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 
 const {
   createRequest,
@@ -16,10 +17,25 @@ router.post("/adoptions", authMiddleware, createRequest);
 
 router.get("/adoptions/my-requests", authMiddleware, getMyRequests);
 
-router.get("/adoptions/received", authMiddleware, getReceivedRequests);
+router.get(
+  "/adoptions/received",
+  authMiddleware,
+  adminMiddleware,
+  getReceivedRequests,
+);
 
-router.put("/adoptions/:id/approve", authMiddleware, approveRequest);
+router.put(
+  "/adoptions/:id/approve",
+  authMiddleware,
+  adminMiddleware,
+  approveRequest,
+);
 
-router.put("/adoptions/:id/reject", authMiddleware, rejectRequest);
+router.put(
+  "/adoptions/:id/reject",
+  authMiddleware,
+  adminMiddleware,
+  rejectRequest,
+);
 
 module.exports = router;
