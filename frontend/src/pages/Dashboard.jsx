@@ -22,12 +22,12 @@ export default function Dashboard() {
         const requests = [];
 
         if (isAdmin) {
-          requests.push(api.get("/pets/my-pets"));
+          requests.push(api.get("/my-pets"));
         } else {
           requests.push(Promise.resolve({ data: [] }));
         }
 
-        requests.push(api.get("/pets/my-adoptions"));
+        requests.push(api.get("/my-adoptions"));
 
         const [petsRes, adoptionsRes] = await Promise.all(requests);
 
