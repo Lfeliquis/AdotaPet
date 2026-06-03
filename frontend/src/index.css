@@ -1133,3 +1133,69 @@ select {
 .status-rejected {
   background: #ef4444;
 }
+
+/* SOLICITAÇÕES DE ADOÇÃO */
+
+.request-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 22px;
+}
+
+.request-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 18px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.request-content {
+  flex: 1;
+}
+
+.request-content h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+}
+
+.request-content p {
+  margin: 6px 0;
+  font-size: 17px;
+}
+
+.request-message {
+  margin-top: 14px;
+  padding: 14px;
+  background: #f8f8f8;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.request-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #f59e0b;
+}
+
+.status-approved {
+  background: #22c55e;
+}
+
+.status-rejected {
+  background: #ef4444;
+}
