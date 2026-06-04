@@ -27,7 +27,7 @@ export default function Dashboard() {
           requests.push(Promise.resolve({ data: [] }));
         }
 
-        requests.push(api.get("/my-adoptions"));
+        requests.push(api.get("/adoptions/my-requests"));
 
         const [petsRes, adoptionsRes] = await Promise.all(requests);
 
