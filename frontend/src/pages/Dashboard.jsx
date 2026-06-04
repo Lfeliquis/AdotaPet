@@ -164,4 +164,12 @@ export default function Dashboard() {
       </PageContainer>
     </>
   );
+
+  const [petsRes, adoptionsRes] = await Promise.all(requests);
+
+console.log("PETS:", petsRes.data);
+console.log("ADOPTIONS:", adoptionsRes.data);
+
+setMyPets(petsRes.data || []);
+setMyAdoptions(adoptionsRes.data || []);
 }
