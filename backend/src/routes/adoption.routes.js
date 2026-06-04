@@ -25,7 +25,7 @@ router.get(
   getReceivedRequests,
 );
 
-router.get("/check/:petId", authMiddleware, checkRequestStatus);
+router.get("/adoptions/check/:petId", authMiddleware, checkRequestStatus);
 
 router.put(
   "/adoptions/:id/approve",
