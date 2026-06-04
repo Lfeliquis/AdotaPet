@@ -31,10 +31,15 @@ export default function Dashboard() {
 
         const [petsRes, adoptionsRes] = await Promise.all(requests);
 
+        console.log("PETS:", petsRes.data);
+        console.log("ADOPTIONS:", adoptionsRes.data);
+
         setMyPets(petsRes.data || []);
         setMyAdoptions(adoptionsRes.data || []);
       } catch (err) {
-        console.error("Erro ao carregar dashboard:", err);
+        console.error("ERRO DASHBOARD:", err.response?.data);
+        console.error("STATUS:", err.response?.status);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -164,12 +169,4 @@ export default function Dashboard() {
       </PageContainer>
     </>
   );
-
-  const [petsRes, adoptionsRes] = await Promise.all(requests);
-
-console.log("PETS:", petsRes.data);
-console.log("ADOPTIONS:", adoptionsRes.data);
-
-setMyPets(petsRes.data || []);
-setMyAdoptions(adoptionsRes.data || []);
 }
