@@ -309,7 +309,6 @@ function Auth() {
           <div className="form-container sign-up">
             <form onSubmit={handleRegister}>
               <h1>Criar Conta</h1>
-              <SocialIcons />
               <span>ou use seu e-mail para se registrar</span>
               <input
                 name="name"
@@ -345,7 +344,6 @@ function Auth() {
           <div className="form-container sign-in">
             <form onSubmit={handleLogin}>
               <h1>Entrar</h1>
-              <SocialIcons />
               <span>ou use seu e-mail e senha</span>
               <input
                 name="email"
