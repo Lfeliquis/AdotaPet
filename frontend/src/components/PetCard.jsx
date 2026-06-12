@@ -9,7 +9,7 @@ export default function PetCard({ pet }) {
     <div className="pet-card" onClick={() => navigate(`/pets/${pet._id}`)}>
       <div className="pet-image">
         <img
-          src={pet.image || "/images/patas.png"}
+          src={pet.image?.trim() || "/images/patas.png"}
           alt={pet.name}
           onError={(e) => {
             e.target.onerror = null;
