@@ -8,7 +8,14 @@ export default function PetCard({ pet }) {
   return (
     <div className="pet-card" onClick={() => navigate(`/pets/${pet._id}`)}>
       <div className="pet-image">
-        <img src={pet.image || "../public/images/patas.png"} alt={pet.name} />
+        <img
+          src={pet.image || "/images/patas.png"}
+          alt={pet.name}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/images/patas.png";
+          }}
+        />
         <span
           className={`pet-badge ${
             pet.status === "adopted" ? "adopted" : "available"
