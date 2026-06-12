@@ -361,7 +361,6 @@ function Auth() {
                 onChange={handleLoginChange}
                 required
               />
-              <a href="#">Esqueceu sua senha?</a>
               <button type="submit" disabled={loadingLogin}>
                 {loadingLogin ? "Carregando..." : "Entrar"}
               </button>
