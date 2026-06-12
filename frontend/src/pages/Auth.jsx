@@ -14,7 +14,7 @@ const styles = `
   }
 
   .auth-page {
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    background: linear-gradient(to right, #faf0e6, #fde8d8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,7 +51,7 @@ const styles = `
   }
 
   .auth-container button {
-    background-color: #512da8;
+    background-color: #e8541a;
     color: #fff;
     font-size: 12px;
     padding: 10px 45px;
@@ -98,7 +98,7 @@ const styles = `
   }
 
   .auth-container input:focus {
-    background-color: #e0e0f0;
+    background-color: #fde8d8;
   }
 
   .form-container {
@@ -170,7 +170,7 @@ const styles = `
   }
 
   .toggle {
-    background: linear-gradient(to right, #5c6bc0, #512da8);
+    background: linear-gradient(to right, #f07040, #e8541a);
     color: #fff;
     position: relative;
     left: -100%;
